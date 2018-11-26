@@ -14,7 +14,7 @@ export class TrainingService {
 
   constructor() { }
 
-  getExercises(): ITraining[] {
+  getAvailableExercises(): ITraining[] {
     return this.availableExercises.slice();
   }
 
@@ -45,5 +45,9 @@ export class TrainingService {
 
   getActiveExercise(): ITraining {
     return {...this.activeExercise};
+  }
+
+  getAllExercises(): ITraining[] {
+    return this.exercises.slice();
   }
 }
