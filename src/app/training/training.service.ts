@@ -1,21 +1,39 @@
 import { Injectable } from '@angular/core';
 import { ITraining } from "./training.interface";
-import { Subject } from "rxjs";
+import {Subject, Subscription} from "rxjs";
+import {map} from "rxjs/operators";
+import * as firebase from "firebase";
+import { AngularFirestore } from "angularfire2/firestore";
 
 @Injectable()
 export class TrainingService {
-  private availableExercises: ITraining[] = [{ id: 'crunches', name: 'Crunches', duration: 30, calories: 8 },
-    { id: 'touch-toes', name: 'Touch Toes', duration: 180, calories: 15 },
-    { id: 'side-lunges', name: 'Side Lunges', duration: 120, calories: 18 },
-    { id: 'burpees', name: 'Burpees', duration: 60, calories: 8 }];
+  private availableExercises: ITraining[] = [];
   private activeExercise: ITraining;
+  private firebaseSubscriptions: Subscription[] = [];
   exerciseChanged = new Subject<ITraining>();
-  private exercises: ITraining[] = [];
+  trainingsChanged = new Subject<ITraining[]>();
+  finishedTrainingsChanged = new Subject<ITraining[]>();
 
-  constructor() { }
+  constructor(private firestore: AngularFirestore) { }
 
-  getAvailableExercises(): ITraining[] {
-    return this.availableExercises.slice();
+  getAvailableExercises(): void {
+    this.firebaseSubscriptions.push(this.firestore
+      .collection("availableExercises")
+      .snapshotChanges()
+      .pipe(
+        map(data => {
+          return data.map(doc => {
+            return {
+              id: doc.payload.doc.id,
+              name: doc.payload.doc.data()["name"],
+              duration: doc.payload.doc.data()["duration"],
+              calories: doc.payload.doc.data()["calories"]
+            }
+          });
+        })).subscribe((trainings: ITraining[]) => {
+          this.availableExercises = trainings;
+          this.trainingsChanged.next([...this.availableExercises]);
+        }));
   }
 
   startExercise(selectedId: string): void {
@@ -26,13 +44,13 @@ export class TrainingService {
   }
 
   completeExercise(): void {
-    this.exercises.push({...this.activeExercise, date: new Date(), state: 'completed'});
+    this.saveExercise({...this.activeExercise, date: new Date(), state: 'completed'});
     this.activeExercise = null;
     this.exerciseChanged.next(null);
   }
 
   cancelExercise(progress: number): void {
-    this.exercises.push({
+    this.saveExercise({
       ...this.activeExercise,
       date: new Date(),
       state: 'cancelled',
@@ -47,7 +65,23 @@ export class TrainingService {
     return {...this.activeExercise};
   }
 
-  getAllExercises(): ITraining[] {
-    return this.exercises.slice();
+  getAllExercises(): void {
+    this.firebaseSubscriptions.push(
+      this.firestore.collection("finishedTrainings")
+      .valueChanges()
+      .subscribe((trainings: ITraining[]) => {
+        this.finishedTrainingsChanged.next(trainings);
+      })
+    );
+  }
+
+  private saveExercise(exercise: ITraining): void {
+    this.firestore.collection("finishedTrainings").add(exercise);
+  }
+
+  cancelSubscriptions(): void {
+    this.firebaseSubscriptions.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
   }
 }

@@ -3,43 +3,57 @@ import { Injectable } from '@angular/core';
 import { IUser } from "./user.interface";
 import { IAuthData } from "./auth-data.interface";
 import { Router } from "@angular/router";
+import { AngularFireAuth } from "angularfire2/auth";
+import { TrainingService } from "../training/training.service";
 
 @Injectable()
 
 export class AuthService {
   public authChange = new Subject<boolean>();
-  private user: IUser;
-  constructor(private router: Router) { }
+  private isAuthenticated = false;
+
+  constructor(private router: Router,
+              private afAuth: AngularFireAuth,
+              private trainingService: TrainingService) {
+    this.initAuthListener();
+  }
+
+  initAuthListener(): void {
+    this.afAuth.authState.subscribe((user) => {
+      if (user) {
+        this.isAuthenticated = true;
+        this.authChange.next(true);
+        this.router.navigate(['/training']);
+      } else {
+        this.trainingService.cancelSubscriptions();
+        this.isAuthenticated = false;
+        this.authChange.next(false);
+        this.router.navigate(['/login']);
+      }
+    });
+  }
 
   registerUser(authData: IAuthData): void {
-    this.user = {
-      email: authData.email,
-      userId: Math.round(Math.random() * 1000).toString()
-    };
-    this.authChange.next(true);
-    this.router.navigate(['/training']);
+    this.afAuth.auth.createUserWithEmailAndPassword(authData.email, authData.password)
+      .then(() => {
+      })
+      .catch((err) => {
+      });
   }
 
   login(authData: IAuthData): void {
-    this.user = {
-      email: authData.email,
-      userId: Math.round(Math.random() * 1000).toString()
-    };
-    this.authChange.next(true);
-    this.router.navigate(['/training']);
+    this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password)
+      .then(() => {
+      })
+      .catch((err) => {
+      });
   }
 
   logout(): void {
-    this.user = null;
-    this.authChange.next(false);
-    this.router.navigate(['/login']);
-  }
-
-  getUser(): IUser {
-    return {...this.user};
+    this.afAuth.auth.signOut();
   }
 
   isAuth(): boolean {
-    return this.user != null;
+    return this.isAuthenticated;
   }
 }
