@@ -8,6 +8,7 @@
       <input type="password" matInput required formControlName="password" placeholder="Enter your password">
       <mat-error *ngIf="loginForm.controls['password'].errors?.required">Field must not be empty</mat-error>
     </mat-form-field>
-    <button [disabled]="loginForm.invalid" type="submit" mat-raised-button color="primary">Log In</button>
+    <button *ngIf="!isLoading" [disabled]="loginForm.invalid" type="submit" mat-raised-button color="primary">Log In</button>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
   </form>
 </section>

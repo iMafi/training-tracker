@@ -4,6 +4,7 @@ import {Subject, Subscription} from "rxjs";
 import {map} from "rxjs/operators";
 import * as firebase from "firebase";
 import { AngularFirestore } from "angularfire2/firestore";
+import {GlobalService} from "../shared/global.service";
 
 @Injectable()
 export class TrainingService {
@@ -14,9 +15,11 @@ export class TrainingService {
   trainingsChanged = new Subject<ITraining[]>();
   finishedTrainingsChanged = new Subject<ITraining[]>();
 
-  constructor(private firestore: AngularFirestore) { }
+  constructor(private firestore: AngularFirestore,
+              private globalService: GlobalService) { }
 
   getAvailableExercises(): void {
+    this.globalService.trainingLoadingStateChanged.next(true);
     this.firebaseSubscriptions.push(this.firestore
       .collection("availableExercises")
       .snapshotChanges()
@@ -33,7 +36,14 @@ export class TrainingService {
         })).subscribe((trainings: ITraining[]) => {
           this.availableExercises = trainings;
           this.trainingsChanged.next([...this.availableExercises]);
-        }));
+          this.globalService.trainingLoadingStateChanged.next(false);
+        }, (err) => {
+          this.globalService.trainingLoadingStateChanged.next(false);
+          this.globalService.showSnackBar("Getting trainings failed. Please try again later", null, {
+            duration: 3000
+          });
+          this.trainingsChanged.next(null);
+      }));
   }
 
   startExercise(selectedId: string): void {

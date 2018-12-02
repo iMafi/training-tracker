@@ -1,10 +1,11 @@
 import { Subject } from "rxjs";
 import { Injectable } from '@angular/core';
-import { IUser } from "./user.interface";
 import { IAuthData } from "./auth-data.interface";
 import { Router } from "@angular/router";
 import { AngularFireAuth } from "angularfire2/auth";
 import { TrainingService } from "../training/training.service";
+import {MatSnackBar} from "@angular/material";
+import {GlobalService} from "../shared/global.service";
 
 @Injectable()
 
@@ -14,7 +15,9 @@ export class AuthService {
 
   constructor(private router: Router,
               private afAuth: AngularFireAuth,
-              private trainingService: TrainingService) {
+              private trainingService: TrainingService,
+              private snackBar: MatSnackBar,
+              private globalService: GlobalService) {
     this.initAuthListener();
   }
 
@@ -34,18 +37,30 @@ export class AuthService {
   }
 
   registerUser(authData: IAuthData): void {
+    this.globalService.loadingStateChanged.next(true);
     this.afAuth.auth.createUserWithEmailAndPassword(authData.email, authData.password)
       .then(() => {
+        this.globalService.loadingStateChanged.next(false);
       })
       .catch((err) => {
+        this.globalService.loadingStateChanged.next(false);
+        this.globalService.showSnackBar(err.message, null, {
+          duration: 3000
+        });
       });
   }
 
   login(authData: IAuthData): void {
+    this.globalService.loadingStateChanged.next(true);
     this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password)
       .then(() => {
+        this.globalService.loadingStateChanged.next(false);
       })
       .catch((err) => {
+        this.globalService.loadingStateChanged.next(false);
+        this.globalService.showSnackBar(err.message, null, {
+          duration: 3000
+        });
       });
   }
 
