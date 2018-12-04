@@ -17,6 +17,8 @@ import { TrainingService } from "./training/training.service";
 import { environment } from "../environments/environment";
 import { GlobalService } from "./shared/global.service";
 import { AuthModule } from "./auth/auth.module";
+import { StoreModule } from "@ngrx/store";
+import { reducers } from "./app.reducer";
 
 @NgModule({
   declarations: [
@@ -34,7 +36,8 @@ import { AuthModule } from "./auth/auth.module";
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AuthModule,
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    StoreModule.forRoot(reducers)
   ],
   providers: [AuthService, TrainingService, GlobalService],
   bootstrap: [AppComponent]

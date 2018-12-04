@@ -1,8 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from "../auth.service";
 import { GlobalService } from "../../shared/global.service";
-import {Subscription} from "rxjs";
+import { Observable, Subscription } from "rxjs";
+import { map } from "rxjs/operators";
+import { Store } from "@ngrx/store";
+import * as appReducer from "../../app.reducer";
 
 @Component({
   selector: 'app-login',
@@ -11,17 +14,16 @@ import {Subscription} from "rxjs";
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public loginForm: FormGroup;
-  public isLoading = false;
+  public isLoading$: Observable<boolean>;
   private loadingSubscription: Subscription;
 
   constructor(private formBuilder: FormBuilder,
               private authService: AuthService,
-              private globalService: GlobalService) { }
+              private globalService: GlobalService,
+              private store: Store<appReducer.IState>) { }
 
   ngOnInit() {
-    this.loadingSubscription = this.globalService.loadingStateChanged.subscribe((isLoading) => {
-      this.isLoading = isLoading;
-    });
+    this.isLoading$ = this.store.select(appReducer.getIsLoading);
     this.loginForm = this.formBuilder.group({
       login: ['', Validators.required],
       password: ['', Validators.required]
@@ -36,8 +38,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.loadingSubscription) {
-      this.loadingSubscription.unsubscribe();
-    }
+    // if (this.loadingSubscription) {
+    //   this.loadingSubscription.unsubscribe();
+    // }
   }
 }
