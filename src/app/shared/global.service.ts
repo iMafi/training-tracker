@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Subject } from "rxjs";
 import {MatSnackBar} from "@angular/material";
 import {MatSnackBarConfig} from "@angular/material/typings/esm5/snack-bar";
 
@@ -7,8 +6,6 @@ import {MatSnackBarConfig} from "@angular/material/typings/esm5/snack-bar";
   providedIn: 'root'
 })
 export class GlobalService {
-  loadingStateChanged = new Subject<boolean>();
-  trainingLoadingStateChanged = new Subject<boolean>();
 
   constructor(private snackBar: MatSnackBar) { }
 

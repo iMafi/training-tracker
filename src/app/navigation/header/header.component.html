@@ -8,10 +8,10 @@
     <a routerLink="/">Training Tracker</a></div>
   <div fxHide.xs fxLayout fxFlex fxLayoutAlign="flex-end">
     <ul fxLayout fxLayoutGap="10px" class="navigation-items">
-      <li *ngIf="!isAuth"><a routerLink="/signup">Sign Up</a></li>
-      <li *ngIf="!isAuth"><a routerLink="/login">Log In</a></li>
-      <li *ngIf="isAuth"><a routerLink="/training">Training</a></li>
-      <li *ngIf="isAuth"><a style="cursor: pointer" (click)="logout()">Log Out</a></li>
+      <li *ngIf="!(isAuth$ | async)"><a routerLink="/signup">Sign Up</a></li>
+      <li *ngIf="!(isAuth$ | async)"><a routerLink="/login">Log In</a></li>
+      <li *ngIf="isAuth$ | async"><a routerLink="/training">Training</a></li>
+      <li *ngIf="isAuth$ | async"><a style="cursor: pointer" (click)="logout()">Log Out</a></li>
     </ul>
   </div>
 </mat-toolbar>
