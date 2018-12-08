@@ -2,7 +2,7 @@ import { NgForm } from "@angular/forms";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TrainingService } from "../training.service";
 import { ITraining } from "../training.interface";
 import { GlobalService } from "../../shared/global.service";
@@ -14,7 +14,7 @@ import * as appReducer from "../../app.reducer";
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.css']
 })
-export class NewTrainingComponent implements OnInit, OnDestroy {
+export class NewTrainingComponent implements OnInit {
   public trainings$: Observable<ITraining[]>;
   public isLoading$: Observable<boolean>;
   constructor(private trainingService: TrainingService,

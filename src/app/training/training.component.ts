@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from "rxjs";
 import { TrainingService } from "./training.service";
 import { Store } from "@ngrx/store";
-import * as trainingReducer from "training.reducer";
+import * as trainingReducer from "./training.reducer";
 
 @Component({
   selector: 'app-training',

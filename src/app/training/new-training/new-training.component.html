@@ -10,7 +10,7 @@
         </mat-form-field>
         <mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
       </mat-card-content>
-      <mat-card-actions fxLayoutAlign="center" *ngIf="!isLoading$ | async">
+      <mat-card-actions fxLayoutAlign="center" *ngIf="!(isLoading$ | async)">
         <button *ngIf="trainings$ | async" mat-button [disabled]="f.invalid"  type="submit">Start</button>
         <button *ngIf="!(trainings$ | async)" mat-button (click)="getTrainings()" type="button">Retry</button>
       </mat-card-actions>
