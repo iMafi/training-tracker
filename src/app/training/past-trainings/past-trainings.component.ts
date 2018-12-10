@@ -12,7 +12,7 @@ import * as trainingReducer from "../training.reducer";
   styleUrls: ['./past-trainings.component.css']
 })
 export class PastTrainingsComponent implements OnInit, AfterViewInit {
-  displayedColumns = ['date', 'name', 'duration', 'calories', 'state'];
+  displayedColumns = ['date', 'name', 'duration', 'state'];
   dataSource = new MatTableDataSource<ITraining>();
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
