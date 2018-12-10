@@ -16,7 +16,7 @@
 
   <ng-container matColumnDef="duration">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Duration</mat-header-cell>
-    <mat-cell *matCellDef="let element">{{ element.duration }}</mat-cell>
+    <mat-cell *matCellDef="let element">{{ element.duration/60 }} min</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="state">

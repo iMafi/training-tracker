@@ -28,8 +28,7 @@ export class TrainingService {
             return {
               id: doc.payload.doc.id,
               name: doc.payload.doc.data()["name"],
-              duration: doc.payload.doc.data()["duration"],
-              calories: doc.payload.doc.data()["calories"]
+              duration: doc.payload.doc.data()["duration"]
             }
           });
         })).subscribe((trainings: ITraining[]) => {
@@ -64,8 +63,7 @@ export class TrainingService {
           ...training,
           date: new Date(),
           state: 'cancelled',
-          duration: training.duration * (progress / 100),
-          calories: training.calories * (progress / 100)
+          duration: training.duration * (progress / 100)
         });
         this.store.dispatch(new trainingActions.StopTraining());
       });
